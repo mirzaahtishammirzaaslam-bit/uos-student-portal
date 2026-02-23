@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <title>UOS - Student Portal</title>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .heading-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .glass-sidebar {
+            background: linear-gradient(180deg, #001e3c 0%, #000c1a 100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0) !important;
+        }
+
+        /* General Card Style */
+        .premium-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* Quick Services Hover Effects - Slide up Colors */
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .hover-red:hover::before {
+            background: #ef4444;
+            top: 0;
+        }
+
+        .hover-emerald:hover::before {
+            background: #10b981;
+            top: 0;
+        }
+
+        .hover-blue:hover::before {
+            background: #3b82f6;
+            top: 0;
+        }
+
+        .hover-amber:hover::before {
+            background: #f59e0b;
+            top: 0;
+        }
+
+        .service-card:hover i,
+        .service-card:hover p {
+            color: white !important;
+        }
+
+        /* Sidebar & Nav */
+        .nav-link {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 6px 20px;
+        }
+
+        .active-link {
+            background: linear-gradient(135deg, #D4A35B 0%, #B88A44 100%);
+            color: white !important;
+        }
+
+        /* ID Card Modal */
+        .id-card-main {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 350px;
+            position: relative;
+        }
+
+        .id-card-top {
+            background: #001e3c;
+            color: white;
+        }
+
+        .photo-container {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #D4A35B;
+            border-radius: 20px;
+            margin: 0 auto 15px;
+            overflow: hidden;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 8px 0;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+    </style>
+
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== "true") { window.location.replace('uosahiwallogin.html'); }
+    </script>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <aside id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-72 glass-sidebar text-white flex-shrink-0 z-50 flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
+        <div class="p-8 mb-2 flex flex-col items-center text-center border-b border-white/10">
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-2 mb-4 shadow-xl">
+                <img src="Group 41.png" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <h1 class="heading-font text-xl font-black uppercase leading-none">University of</h1>
+            <p class="text-[12px] tracking-[0.3em] text-amber-500 uppercase font-black mt-1">Sahiwal</p>
+        </div>
+        <nav class="flex-1 space-y-2 mt-6">
+            <a href="dashboard.html" class="flex items-center px-4 py-3.5 nav-link active-link"><i
+                    class="fas fa-th-large w-6"></i> <span class="text-sm font-bold">Overview</span></a>
+            <a href="profile.html" class="flex items-center px-4 py-3.5 nav-link text-gray-400 font-semibold"><i
+                    class="fas fa-user-circle w-6"></i> <span class="text-sm">Profile Details</span></a>
+            <button onclick="toggleIDCard()"
+                class="w-[calc(100%-40px)] flex items-center px-4 py-3.5 nav-link text-gray-400 bg-white/5 cursor-pointer font-semibold"><i
+                    class="fas fa-id-card w-6 text-amber-500"></i> <span class="text-sm">Digital ID Card</span></button>
+        </nav>
+        <div class="p-8">
+            <button onclick="logout()"
+                class="flex items-center justify-center text-red-400 hover:text-white w-full px-4 py-3 border border-red-400/30 rounded-xl hover:bg-red-500 font-bold transition">
+                <i class="fas fa-power-off mr-3"></i> Log out
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-y-auto bg-slate-50">
+        <header
+            class="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-40 flex justify-between items-center px-6 lg:px-10 border-b">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 p-2 hover:bg-gray-100 rounded-lg"><i
+                        class="fas fa-bars text-xl"></i></button>
+                <div class="hidden sm:block">
+                    <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Current Session</p>
+                    <p class="text-[#003366] font-extrabold text-sm" id="currentDate">Loading...</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-sm font-black text-gray-800" id="topNavName">Student</p>
+                    <p class="text-[10px] text-emerald-500 font-bold uppercase flex items-center justify-end gap-1">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Online
+                    </p>
+                </div>
+                <img src="" class="w-10 h-10 rounded-xl border-2 border-amber-500/20 cursor-pointer" id="profileImg"
+                    onclick="window.location.href='profile.html'">
+            </div>
+        </header>
+
+        <main class="p-4 lg:p-10 max-w-7xl mx-auto w-full space-y-8">
+            <div
+                class="bg-gradient-to-br from-[#002147] via-[#003366] to-[#004b8d] rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+                <div class="relative z-10">
+                    <h3 class="heading-font text-2xl md:text-4xl font-black"><span id="greetingText">Welcome</span>,
+                        <span id="welcomeName" class="text-amber-400">Student</span>!
+                    </h3>
+                    <p class="text-blue-100/70 mt-2 font-medium">Your dynamic dashboard is synced with the university.
+                    </p>
+                </div>
+                <i
+                    class="fas fa-graduation-cap absolute right-[-20px] top-[-20px] text-[150px] text-white/5 rotate-12"></i>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="premium-card p-6 rounded-[2rem]">
+                    <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Cumulative GPA</p>
+                    <h4 class="text-2xl font-black text-[#003366]" id="statCGPA">0.00</h4>
+                </div>
+                <div class="premium-card p-6 rounded-[2rem]">
+                    <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Percentage</p>
+                    <h4 class="text-2xl font-black text-[#003366]"><span id="statPercent">0</span>%</h4>
+                </div>
+                <div class="premium-card p-6 rounded-[2rem]">
+                    <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Attendance</p>
+                    <h4 class="text-2xl font-black text-emerald-600">94.2%</h4>
+                </div>
+                <div class="premium-card p-6 rounded-[2rem]">
+                    <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Semester</p>
+                    <h4 class="text-2xl font-black text-[#003366]" id="statSemester">-</h4>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
+                <div class="lg:col-span-2 space-y-8">
+                    <div>
+                        <h2
+                            class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center justify-between">
+                            Today's Lectures
+                            <span id="deptBadge"
+                                class="text-[10px] bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-bold">Syncing...</span>
+                        </h2>
+                        <div id="todayClassesContainer" class="grid gap-4">
+                            <div class="animate-pulse flex flex-col gap-4">
+                                <div class="h-20 bg-gray-200 rounded-2xl w-full"></div>
+                                <div class="h-20 bg-gray-200 rounded-2xl w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">Quick Services</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="premium-card service-card hover-red p-6 rounded-3xl text-center cursor-pointer">
+                                <i class="fas fa-file-pdf text-red-500 text-2xl mb-3"></i>
+                                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-tighter">Exam Slip</p>
+                            </div>
+                            <div
+                                class="premium-card service-card hover-emerald p-6 rounded-3xl text-center cursor-pointer">
+                                <i class="fas fa-money-check-alt text-emerald-500 text-2xl mb-3"></i>
+                                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-tighter">Fee Voucher
+                                </p>
+                            </div>
+                            <div
+                                class="premium-card service-card hover-blue p-6 rounded-3xl text-center cursor-pointer">
+                                <i class="fas fa-graduation-cap text-blue-500 text-2xl mb-3"></i>
+                                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-tighter">LMS Portal
+                                </p>
+                            </div>
+                            <div
+                                class="premium-card service-card hover-amber p-6 rounded-3xl text-center cursor-pointer">
+                                <i class="fas fa-book text-amber-500 text-2xl mb-3"></i>
+                                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-tighter">E-Library</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">Deadlines</h2>
+                        <div class="bg-white p-5 rounded-2xl border-l-4 border-red-500 shadow-sm">
+                            <h6 class="text-sm font-bold text-slate-800">Final Project Submission</h6>
+                            <p class="text-xs text-slate-500 mt-1 flex items-center"><i
+                                    class="far fa-clock mr-2 text-red-500"></i> Check LMS for details</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">Course Progress
+                        </h2>
+                        <div class="premium-card p-6 rounded-[2rem] space-y-4">
+                            <div>
+                                <div class="flex justify-between text-[11px] font-bold mb-2"><span>STUDY
+                                        LOAD</span><span class="text-indigo-600">Dynamic</span></div>
+                                <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                                    <div
+                                        class="bg-indigo-500 h-full w-[70%] rounded-full shadow-[0_0_8px_rgba(99,102,241,0.5)]">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="idCardModal"
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="id-card-main transform transition-all scale-95 opacity-0" id="modalContent">
+            <button onclick="toggleIDCard()"
+                class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"><i
+                    class="fas fa-times-circle text-2xl"></i></button>
+            <div class="id-card-top text-center p-8">
+                <div class="photo-container"><img id="idPhoto" src="" alt="Student"></div>
+                <h3 id="idName" class="heading-font text-white text-xl font-extrabold mb-1">---</h3>
+                <p id="idEmail" class="text-amber-400 text-[10px] font-bold uppercase tracking-wider">---</p>
+            </div>
+            <div class="id-card-bottom p-6 space-y-2">
+                <div class="detail-row"><span class="detail-label">Roll No</span><span id="idRoll"
+                        class="detail-value text-blue-900">---</span></div>
+                <div class="detail-row"><span class="detail-label">Dept</span><span id="idDeptName"
+                        class="detail-value">---</span></div>
+                <div class="detail-row"><span class="detail-label">Session</span><span id="idSession"
+                        class="detail-value">---</span></div>
+                <div class="detail-row"><span class="detail-label">Contact</span><span id="idPhoneDisplay"
+                        class="detail-value">---</span></div>
+                <div class="bg-slate-50 p-3 rounded-xl text-center mt-4 border border-slate-100">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest"><i
+                            class="fas fa-shield-alt text-emerald-500 mr-1"></i> Official University ID</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const _k = "AIzaSyBJ6kw-9RnL-CJaeykktCVZFcwGzsniZY8";
+        const firebaseConfig = { apiKey: _k, authDomain: "uosahiwal-b4bb0.firebaseapp.com", projectId: "uosahiwal-b4bb0", storageBucket: "uosahiwal-b4bb0.firebasestorage.app", messagingSenderId: "4016932784", appId: "1:4016932784:web:59fa22d676404124f47875" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // UPDATED: Fixed for your specific Firestore structure
+        async function fetchDynamicTimetable(dept, semester) {
+            const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+            const container = document.getElementById("todayClassesContainer");
+
+            try {
+                // Path change: aapke database mein semester ka collection nahi hai, seedha Dept ke document mein data hai
+                const docRef = doc(db, "timetables", dept);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    const data = snap.data();
+                    // Tuesday (today) ke andar ka data nikalna
+                    const lecturesRaw = data[today];
+
+                    if (lecturesRaw) {
+                        let html = "";
+                        // Agar multiple classes hain to loop chalega
+                        const lecturesArray = Array.isArray(lecturesRaw) ? lecturesRaw : [lecturesRaw];
+
+                        lecturesArray.forEach(cls => {
+                            html += `
+                                <div class="premium-card p-5 rounded-2xl flex items-center justify-between shadow-sm bg-white hover:border-amber-500">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-book"></i></div>
+                                        <div>
+                                            <h5 class="font-extrabold text-slate-800 text-sm">${cls.subject || 'No Title'}</h5>
+                                            <p class="text-[11px] text-slate-500 mt-1">
+                                                <i class="far fa-clock text-amber-500 mr-1"></i> ${cls.time || 'TBA'} | 
+                                                <i class="fas fa-map-marker-alt text-blue-500 ml-1"></i> ${cls.room || 'N/A'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a href="${cls.link || '#'}" target="_blank" class="text-slate-300 hover:text-amber-500 transition-colors"><i class="fas fa-chevron-right"></i></a>
+                                </div>`;
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = `<div class="bg-white p-8 rounded-3xl border-2 border-dashed text-center"><p class="text-slate-400 font-bold">No lectures scheduled for ${today}.</p></div>`;
+                    }
+                } else {
+                    container.innerHTML = `<div class="bg-white p-8 rounded-3xl border-2 border-dashed text-center"><p class="text-slate-400 font-bold">Timetable for "${dept}" not found.</p></div>`;
+                }
+            } catch (e) {
+                console.error("Firestore Error:", e);
+                container.innerHTML = `<p class="text-center text-red-400 text-xs">Sync Error: Check Console</p>`;
+            }
+        }
+
+        async function loadProfileAndDashboard() {
+            const email = localStorage.getItem('userEmail');
+            const studentName = localStorage.getItem('studentName') || "Student";
+
+            document.getElementById('welcomeName').innerText = studentName;
+            document.getElementById('topNavName').innerText = studentName;
+            document.getElementById('idName').innerText = studentName;
+            document.getElementById('idEmail').innerText = email;
+
+            const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=003366&color=D4A35B&bold=true`;
+            document.getElementById('profileImg').src = avatar;
+            document.getElementById('idPhoto').src = avatar;
+
+            if (email) {
+                const docSnap = await getDoc(doc(db, "studentProfiles", email));
+                if (docSnap.exists()) {
+                    const d = docSnap.data();
+                    document.getElementById('statCGPA').innerText = d.cgpa || "0.00";
+                    document.getElementById('statPercent').innerText = d.percentage || "0";
+                    document.getElementById('statSemester').innerText = d.semester || "-";
+                    document.getElementById('idRoll').innerText = d.rollNo || "N/A";
+                    document.getElementById('idDeptName').innerText = d.dept || "N/A";
+                    document.getElementById('idPhoneDisplay').innerText = d.phone || "---";
+                    document.getElementById('idSession').innerText = d.session || "---";
+                    document.getElementById('deptBadge').innerText = `${d.dept} | ${d.semester}`;
+
+                    // Department matching is key here
+                    fetchDynamicTimetable(d.dept, d.semester);
+                }
+            }
+        }
+
+        window.toggleIDCard = () => {
+            const m = document.getElementById('idCardModal');
+            const c = document.getElementById('modalContent');
+            if (m.classList.contains('hidden')) {
+                m.classList.remove('hidden');
+                setTimeout(() => c.classList.add('scale-100', 'opacity-100'), 10);
+            } else {
+                c.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => m.classList.add('hidden'), 400);
+            }
+        };
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('sidebar-open');
+        window.logout = () => { localStorage.clear(); window.location.replace('uosahiwallogin.html'); };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfileAndDashboard();
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const h = new Date().getHours();
+            document.getElementById('greetingText').innerText = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+        });
+    </script>
+</body>
+
+</html>

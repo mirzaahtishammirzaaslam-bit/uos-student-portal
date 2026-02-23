@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <title>UOS - Responsive Profile</title>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-sidebar {
+            background: linear-gradient(180deg, #001e3c 0%, #000c1a 100%);
+        }
+
+        .profile-header-bg {
+            background: linear-gradient(135deg, #003366 0%, #001e3c 100%);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .input-field:focus {
+            border-color: #D4A35B;
+            box-shadow: 0 0 0 4px rgba(212, 163, 91, 0.1);
+            outline: none;
+        }
+
+        .label-text {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 6px;
+            display: block;
+            margin-left: 4px;
+        }
+
+        /* Responsive Sidebar Logic */
+        #sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-open {
+            transform: translateX(0) !important;
+        }
+
+        /* Overlay for mobile */
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 45;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-64 lg:w-72 glass-sidebar text-white flex-shrink-0 z-50 flex flex-col -translate-x-full lg:translate-x-0">
+        <div class="p-6 flex flex-col items-center border-b border-white/10">
+            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-2 mb-3 shadow-xl">
+                <i class="fas fa-university text-[#003366] text-xl"></i>
+            </div>
+            <h1 class="text-md font-black tracking-tight uppercase">University of</h1>
+            <p class="text-[9px] tracking-[0.4em] text-amber-500 uppercase font-black">Sahiwal</p>
+        </div>
+
+        <nav class="flex-1 mt-6 overflow-y-auto">
+            <a href="dashboard.html"
+                class="flex items-center px-6 py-3.5 mx-4 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-th-large w-6"></i> <span class="text-sm font-bold">Overview</span>
+            </a>
+            <a href="profile.html"
+                class="flex items-center px-6 py-3.5 mx-4 rounded-xl bg-amber-500 text-white shadow-lg shadow-amber-500/20">
+                <i class="fas fa-user-circle w-6"></i> <span class="text-sm font-bold">Academic Profile</span>
+            </a>
+        </nav>
+
+        <div class="p-6">
+            <button onclick="localStorage.clear(); window.location.href='uosahiwallogin.html'"
+                class="w-full p-3 rounded-xl border border-red-500/30 text-red-400 text-xs font-bold hover:bg-red-500 hover:text-white transition-all uppercase">LOGOUT</button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-y-auto bg-slate-50">
+
+        <header
+            class="h-16 lg:h-20 bg-white/80 backdrop-blur-md flex items-center justify-between px-4 lg:px-10 sticky top-0 z-40 border-b">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 p-2">
+                    <i class="fas fa-bars-staggered text-xl"></i>
+                </button>
+                <h2 class="font-black text-slate-800 text-[10px] lg:text-sm uppercase tracking-widest">Student Settings
+                </h2>
+            </div>
+            <div id="saveStatus" class="hidden text-emerald-500 text-[9px] font-black uppercase">
+                <i class="fas fa-check-circle mr-1"></i> Data Synced
+            </div>
+        </header>
+
+        <main class="p-4 lg:p-10 w-full max-w-5xl mx-auto">
+
+            <div
+                class="profile-header-bg rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-10 text-white flex flex-col md:flex-row items-center gap-6 lg:gap-8 shadow-xl mb-8 relative overflow-hidden text-center md:text-left">
+                <div class="relative">
+                    <img id="displayAvatar"
+                        src="https://ui-avatars.com/api/?name=User&background=D4A35B&color=fff&bold=true"
+                        class="w-24 h-24 lg:w-32 lg:h-32 rounded-3xl border-4 border-white/20 shadow-2xl object-cover">
+                </div>
+                <div class="z-10">
+                    <h1 id="topName" class="text-2xl lg:text-4xl font-black tracking-tight mb-1 uppercase">Loading...
+                    </h1>
+                    <p id="topDept" class="text-amber-400 font-bold uppercase tracking-[0.1em] text-[10px] lg:text-xs">
+                        Not Assigned</p>
+
+                    <div class="flex justify-center md:justify-start gap-4 mt-4">
+                        <div
+                            class="bg-white/10 backdrop-blur-md px-3 py-1.5 lg:px-4 lg:py-2 rounded-xl border border-white/10">
+                            <span class="text-blue-200 block uppercase text-[8px] font-black">Roll Number</span>
+                            <span id="topRoll"
+                                class="text-[10px] lg:text-xs font-bold tracking-widest uppercase">---</span>
+                        </div>
+                    </div>
+                </div>
+                <i
+                    class="fas fa-graduation-cap absolute right-[-15px] bottom-[-15px] text-8xl lg:text-[150px] text-white/5 rotate-12"></i>
+            </div>
+
+            <form id="profileForm" class="space-y-6 lg:space-y-8">
+
+                <div class="bg-white rounded-[2rem] p-6 lg:p-10 shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-blue-50 text-[#003366] flex items-center justify-center shadow-inner">
+                            <i class="fas fa-id-card text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">Academic Info</h3>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Verification Details
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-8">
+                        <div>
+                            <label class="label-text">Full Name</label>
+                            <input type="text" id="profName" class="input-field bg-slate-50 cursor-not-allowed"
+                                readonly>
+                        </div>
+                        <div>
+                            <label class="label-text">Email Address</label>
+                            <input type="email" id="profEmail" class="input-field bg-slate-50 cursor-not-allowed"
+                                readonly>
+                        </div>
+                        <div>
+                            <label class="label-text">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="03XXXXXXXXX" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="label-text">Roll Number</label>
+                            <input type="text" id="rollNo" placeholder="BSSE-F23-01" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="label-text">Department</label>
+                            <select id="dept" class="input-field" required>
+                                <option value="" disabled selected>Select Dept</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Software Engineering">Software Engineering</option>
+                                <option value="BBA">BBA</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label-text">Semester</label>
+                            <select id="semester" class="input-field" required>
+                                <option value="1st">1st Semester</option>
+                                <option value="2nd">2nd Semester</option>
+                                <option value="3rd">3rd Semester</option>
+                                <option value="4th">4th Semester</option>
+                                <option value="5th">5th Semester</option>
+                                <option value="6th">6th Semester</option>
+                                <option value="7th">7th Semester</option>
+                                <option value="8th">8th Semester</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-6 lg:p-10 shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shadow-inner">
+                            <i class="fas fa-chart-line text-lg"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-800">Grades Standing</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+                            <div>
+                                <label class="label-text">Current CGPA</label>
+                                <input type="number" id="cgpa" step="0.01" min="0" max="4" placeholder="0.00"
+                                    class="input-field text-lg font-black text-[#003366]"
+                                    oninput="calculatePercentFromCGPA()" required>
+                            </div>
+                            <div>
+                                <label class="label-text">Session</label>
+                                <input type="text" id="session" placeholder="2023-2027" class="input-field" required>
+                            </div>
+                        </div>
+
+                        <div
+                            class="profile-header-bg p-8 rounded-[1.5rem] lg:rounded-[2rem] text-white flex flex-col items-center shadow-lg">
+                            <p class="text-[9px] font-black uppercase tracking-[0.2em] text-blue-200 mb-2">Percentage %
+                            </p>
+                            <div class="flex items-baseline">
+                                <span id="displayPercent"
+                                    class="text-5xl lg:text-6xl font-black tracking-tighter">0</span>
+                                <span class="text-xl lg:text-2xl font-bold text-amber-400 ml-1">%</span>
+                            </div>
+                            <input type="hidden" id="finalPercent" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 pb-12">
+                    <a href="dashboard.html"
+                        class="text-[10px] font-black text-slate-400 hover:text-[#003366] uppercase tracking-[0.2em]">
+                        <i class="fas fa-arrow-left mr-2"></i> Dashboard
+                    </a>
+                    <button type="submit" id="saveBtn"
+                        class="w-full sm:w-auto bg-[#003366] text-white px-10 py-4 rounded-xl lg:rounded-2xl font-black uppercase tracking-widest hover:bg-[#D4A35B] transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/10">
+                        <span>Save Profile</span>
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJ6kw-9RnL-CJaeykktCVZFcwGzsniZY8",
+            authDomain: "uosahiwal-b4bb0.firebaseapp.com",
+            projectId: "uosahiwal-b4bb0",
+            storageBucket: "uosahiwal-b4bb0.firebasestorage.app",
+            messagingSenderId: "4016932784",
+            appId: "1:4016932784:web:59fa22d676404124f47875"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Sidebar Toggle for Mobile
+        window.toggleSidebar = () => {
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sb.classList.toggle('sidebar-open');
+            overlay.style.display = sb.classList.contains('sidebar-open') ? 'block' : 'none';
+        };
+
+        window.calculatePercentFromCGPA = function () {
+            const cgpa = parseFloat(document.getElementById('cgpa').value);
+            const display = document.getElementById('displayPercent');
+            const hidden = document.getElementById('finalPercent');
+            if (cgpa && cgpa >= 0 && cgpa <= 4) {
+                const percent = ((cgpa / 4) * 100).toFixed(1);
+                display.innerText = percent;
+                hidden.value = percent;
+            } else {
+                display.innerText = "0";
+                hidden.value = "0";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const email = localStorage.getItem('userEmail');
+            const name = localStorage.getItem('studentName');
+            if (!email) { window.location.replace('uosahiwallogin.html'); return; }
+
+            document.getElementById('profName').value = name || "";
+            document.getElementById('profEmail').value = email;
+            document.getElementById('topName').innerText = name || "Student";
+            document.getElementById('displayAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=D4A35B&color=fff&bold=true&size=256`;
+
+            try {
+                const docSnap = await getDoc(doc(db, "studentProfiles", email));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('phone').value = data.phone || "";
+                    document.getElementById('rollNo').value = data.rollNo || "";
+                    document.getElementById('dept').value = data.dept || "";
+                    document.getElementById('session').value = data.session || "";
+                    document.getElementById('semester').value = data.semester || "";
+                    document.getElementById('cgpa').value = data.cgpa || "";
+                    document.getElementById('displayPercent').innerText = data.percentage || "0";
+                    document.getElementById('finalPercent').value = data.percentage || "0";
+                    document.getElementById('topDept').innerText = data.dept || "Not Assigned";
+                    document.getElementById('topRoll').innerText = data.rollNo || "---";
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const email = localStorage.getItem('userEmail');
+
+            btn.innerHTML = `<i class="fas fa-circle-notch animate-spin"></i>`;
+            btn.disabled = true;
+
+            const profileData = {
+                name: document.getElementById('profName').value,
+                email: email,
+                phone: document.getElementById('phone').value,
+                rollNo: document.getElementById('rollNo').value,
+                dept: document.getElementById('dept').value,
+                session: document.getElementById('session').value,
+                semester: document.getElementById('semester').value,
+                cgpa: document.getElementById('cgpa').value,
+                percentage: document.getElementById('finalPercent').value,
+                updatedAt: new Date()
+            };
+
+            try {
+                await setDoc(doc(db, "studentProfiles", email), profileData);
+                document.getElementById('saveStatus').classList.remove('hidden');
+                setTimeout(() => window.location.href = 'dashboard.html', 800);
+            } catch (error) {
+                alert("Error: " + error.message);
+                btn.disabled = false;
+                btn.innerText = "Save Profile";
+            }
+        });
+    </script>
+</body>
+
+</html>
