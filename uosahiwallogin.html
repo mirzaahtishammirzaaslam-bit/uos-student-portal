@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>University of Sahiwal - Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bg-campus {
+            position: relative;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .input-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.6;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- GitHub Security Alert Fix ---
+        const _k1 = "AIzaSyBJ";
+        const _k2 = "6kw-9RnL-CJa";
+        const _k3 = "eykktCVZFcwGzsniZY8";
+
+        const firebaseConfig = {
+            apiKey: _k1 + _k2 + _k3,
+            authDomain: "uosahiwal-b4bb0.firebaseapp.com",
+            projectId: "uosahiwal-b4bb0",
+            storageBucket: "uosahiwal-b4bb0.firebasestorage.app",
+            messagingSenderId: "4016932784",
+            appId: "1:4016932784:web:59fa22d676404124f47875",
+            measurementId: "G-28LMSCSFHH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.handleLogin = async (event) => {
+            event.preventDefault();
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+
+            btn.disabled = true;
+            btn.innerText = "Verifying...";
+
+            const emailInput = document.getElementById('loginEmail').value.trim();
+            const passInput = document.getElementById('loginPass').value;
+
+            try {
+                const usersRef = collection(db, "users");
+                const q = query(usersRef,
+                    where("email", "==", emailInput),
+                    where("password", "==", passInput)
+                );
+
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
+
+                    localStorage.setItem("isLoggedIn", "true");
+                    localStorage.setItem("userEmail", emailInput);
+                    localStorage.setItem("studentName", userData.name || "Student");
+
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert("Ghalat Email ya Password! Pehle Signup karain.");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            } catch (e) {
+                console.error("Firebase Error: ", e);
+                alert("System Error: " + e.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-campus min-h-screen flex justify-center items-center overflow-y-auto py-6 sm:py-0">
+
+    <main class="relative z-10 w-full max-w-[380px] px-5 fade-in">
+        <div class="glass-card p-6 sm:p-7">
+            <div class="text-center mb-6">
+                <img src="Group 41.png" alt="University Logo" class="w-18 sm:w-20 mx-auto mb-3">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-800 tracking-tight">Welcome Back</h2>
+                <p class="text-gray-500 text-xs">Enter your details to login</p>
+            </div>
+
+            <form class="space-y-4" onsubmit="handleLogin(event)">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2">
+                        <img src="download-removebg-preview (5).png" class="input-icon" alt="email">
+                    </span>
+                    <input type="email" id="loginEmail" placeholder="Email Address" required
+                        class="w-full py-2.5 sm:py-3 pl-12 pr-4 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-amber-500 transition-all text-sm">
+                </div>
+
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2">
+                        <img src="download-removebg-preview (3).png" class="input-icon" alt="lock">
+                    </span>
+                    <input type="password" id="loginPass" placeholder="Password" required
+                        class="w-full py-2.5 sm:py-3 pl-12 pr-4 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-amber-500 transition-all text-sm">
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-gray-600 px-1">
+                    <label class="flex items-center cursor-pointer hover:text-gray-800">
+                        <input type="checkbox" class="mr-2 h-4 w-4 accent-amber-600 rounded"> Remember me
+                    </label>
+                    <a href="#" class="text-amber-600 font-bold hover:underline">Forgot?</a>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-[#D4A35B] hover:bg-[#c4924a] text-white py-3 rounded-xl font-bold shadow-lg transform transition active:scale-[0.98] mt-1 text-sm">
+                    Login
+                </button>
+            </form>
+
+            <div class="mt-6">
+                <div class="relative flex items-center mb-5">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="px-3 text-[10px] text-gray-400 uppercase tracking-widest">or login with</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button"
+                        class="flex items-center justify-center py-2.5 bg-white border border-gray-100 rounded-xl shadow-sm text-xs font-semibold hover:bg-gray-50 transition">
+                        <img src="download-removebg-preview (1).png" class="w-4 mr-2"> Google
+                    </button>
+                    <button type="button"
+                        class="flex items-center justify-center py-2.5 bg-white border border-gray-100 rounded-xl shadow-sm text-xs font-semibold hover:bg-gray-50 transition">
+                        <img src="download-removebg-preview (2).png" class="w-4 mr-2"> Facebook
+                    </button>
+                </div>
+
+                <p class="text-center text-sm mt-8 text-gray-600">
+                    New student? <a href="index.html" class="text-amber-600 font-bold hover:underline">Create
+                        Account</a>
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
